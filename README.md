@@ -2,6 +2,16 @@
 
 Learn how to build connected mobile apps with Xamarin and Azure. This training walks you through the process of creating a backend for a social network for employees, like Yammer.
 
+### Overview
+
+* Morning
+   * High-level overview of Azure App Service
+   * Competitive landscape
+   * Build an MVP with Azure Easy Tables
+* Afternoon
+   * Scale this out to a full ASP.NET backend with data storage, identity, and push.
+   * Tie in other services if we have time.
+
 ### Outline
 
 1. Build an MVP with Azure Easy Tables.
