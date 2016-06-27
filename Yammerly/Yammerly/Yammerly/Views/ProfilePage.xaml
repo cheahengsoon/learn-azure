@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Yammerly.Views.ProfilePage"
+		Title="{Binding Title}"
+		xmlns:local="clr-namespace:Yammerly.Controls;assembly=Yammerly">
+  <ContentPage.Content>
+    <StackLayout BackgroundColor="White">
+      <local:CardView Text="{Binding Name}" Detail="{Binding Position}" ImageSource="{Binding PhotoUrl}" />
+      <Label Text="Posts" TextColor="#030303" FontSize="16" Margin="20,0,0,0"/>
+      <ListView ItemsSource="{Binding TimelineItems}"
+					HasUnevenRows="true"
+					SeparatorVisibility="None">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <local:CardViewProfileCell Text="{Binding Text}" ImageSource="{Binding PhotoUrl}"/>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
+    </StackLayout>
+  </ContentPage.Content>
+</ContentPage>
