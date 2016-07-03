@@ -24,9 +24,12 @@ namespace Yammerly.Droid.Helpers
 
             try
             {
-                await client.LoginAsync(CrossCurrentActivity.Current.Activity, provider);
+                var user = await client.LoginAsync(Xamarin.Forms.Forms.Context, provider);
 
-                success = true;
+                if (user != null)
+                    return true;
+
+                return false;
             }
             catch (Exception ex)
             {

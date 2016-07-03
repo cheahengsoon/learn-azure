@@ -27,20 +27,22 @@ namespace Yammerly
             else
             {
                 DependencyService.Register<IDataService, AzureService>();
-                var client = DependencyService.Get<IDataService>().Initialize();
+
+                if (!Settings.LoggedIn)
+                    DependencyService.Get<IDataService>().Initialize();
             }
 
-            MainPage = new LoginPage();
-
-            /*
             if (Settings.LoggedIn)
             {
                 MainPage = new RootPage();
             }
             else
             {
-                MainPage = new LoginPage();
-            }*/
+                if (Device.OS != TargetPlatform.Android)
+                    MainPage = new LoginPage();
+                else
+                    MainPage = new NavigationPage(new LoginPage());
+            }
         }
 
         protected override void OnStart()

@@ -27,7 +27,7 @@ namespace Yammerly.Droid
             base.OnTerminate();
             UnregisterActivityLifecycleCallbacks(this);
         }
-
+        
         public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
         {
             CrossCurrentActivity.Current.Activity = activity;
