@@ -7,7 +7,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Util;
 
+using Yammerly.Droid.Helpers;
 using Yammerly.Services;
 
 using Microsoft.WindowsAzure.MobileServices;
@@ -27,6 +29,15 @@ namespace Yammerly.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
             ImageCircle.Forms.Plugin.Droid.ImageCircleRenderer.Init();
             LoadApplication(new App());
+        }
+
+        void ConfigurePushNotifications()
+        {
+            // Initialize our Google Cloud Messaging Service
+            PushService.Initialize(this);
+
+            // Register device for Google Cloud Messaging
+            PushService.Register(this);
         }
     }
 }
