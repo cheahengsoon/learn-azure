@@ -184,6 +184,7 @@
     <Compile Include="App_Start\Startup.MobileApp.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\TimelineItemController.cs" />
+    <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="DataObjects\Employee.cs" />
     <Compile Include="DataObjects\TimelineItem.cs" />
     <Compile Include="Helpers\ExpandPropertyAttribute.cs" />

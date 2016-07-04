@@ -10,6 +10,7 @@ using Yammerly.Models;
 using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.WindowsAzure.MobileServices.Sync;
 using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
+using Xamarin.Forms;
 
 namespace Yammerly.Services
 {
@@ -37,7 +38,7 @@ namespace Yammerly.Services
 
             MobileService.CurrentUser = new MobileServiceUser(Settings.UserId);
             MobileService.CurrentUser.MobileServiceAuthenticationToken = Settings.AuthToken;
-
+            
             var store = new MobileServiceSQLiteStore("app.db");
             store.DefineTable<Employee>();
             store.DefineTable<TimelineItem>();
@@ -47,6 +48,20 @@ namespace Yammerly.Services
             isInitialized = true;
         }
 
+        public async Task<bool> LoginAsync()
+        {
+            var result = await DependencyService.Get<IAuthenticationService>().LoginAsync(MobileService, MobileServiceAuthenticationProvider.WindowsAzureActiveDirectory);
+
+            // Fetch current employee profile.
+            var user = await MobileService.InvokeApiAsync<Employee>("UserInfo", System.Net.Http.HttpMethod.Get, null);
+            Settings.FirstName = user.FirstName;
+            Settings.LastName = user.LastName;
+            Settings.PhotoUrl = user.PhotoUrl;
+
+            return result;
+        }
+        
+        #region Data Access
         public async Task<IEnumerable<T>> GetItems<T>() where T : EntityData
         {
             await Initialize();
@@ -93,5 +108,6 @@ namespace Yammerly.Services
                 System.Diagnostics.Debug.WriteLine($"Error during Sync occurred: {ex.Message}");
             }
         }
+#endregion
     }
 }

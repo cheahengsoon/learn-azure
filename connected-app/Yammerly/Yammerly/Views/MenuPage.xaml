@@ -3,9 +3,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Yammerly.Views.MenuPage"
-    xmlns:controls="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
-    Title="{Binding Title}"
-    Icon="{Binding Icon}">
+    xmlns:controls="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions">
   <ContentPage.Content>
     <ListView
            CachingStrategy="RecycleElement"
@@ -25,22 +23,19 @@
               <RowDefinition Height="Auto"/>
               <RowDefinition Height="5"/>
             </Grid.RowDefinitions>
-
             <BoxView Grid.ColumnSpan="3"
                      Grid.RowSpan="4"
                      BackgroundColor="#1976D2"/>
-            <controls:CircleImage
+            <controls:CircleImage x:Name="profilePhoto"
                 Grid.Column="1"
                 Grid.Row="1"
                 HorizontalOptions="Center"
                 VerticalOptions="End"
-                Source="https://avatars3.githubusercontent.com/u/1091304?v=3"
                 WidthRequest="125" HeightRequest="125"/>
-            <Label
+            <Label x:Name="nameLabel"
                 Grid.Column="1"
                 Grid.Row="2"
                 FontSize="28"
-                Text="Pierce Boggan"
                 TextColor="White"/>
           </Grid>
       </ListView.Header>

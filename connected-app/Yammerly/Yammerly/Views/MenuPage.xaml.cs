@@ -5,6 +5,7 @@ using Yammerly.Models;
 using Yammerly.ViewModels;
 
 using Xamarin.Forms;
+using Yammerly.Helpers;
 
 namespace Yammerly.Views
 {
@@ -14,14 +15,13 @@ namespace Yammerly.Views
         List<HomeMenuItem> menuItems;
         public MenuPage(RootPage root)
         {
+            Title = "Yammerly";
 
             this.root = root;
             InitializeComponent();
 
             BackgroundColor = Color.FromHex("#03A9F4");
             ListViewMenu.BackgroundColor = Color.FromHex("#F5F5F5");
-
-            BindingContext = new MenuPageViewModel();
 
             ListViewMenu.ItemsSource = menuItems = new List<HomeMenuItem>
             {       new HomeMenuItem { Title = "Timeline", MenuType = MenuType.Timeline, Icon ="about.png" },
@@ -40,6 +40,10 @@ namespace Yammerly.Views
 
                 ListViewMenu.SelectedItem = null;
             };
+
+
+            nameLabel.Text = $"{Settings.FirstName} {Settings.LastName}";
+            profilePhoto.Source = Settings.PhotoUrl;
         }
     }
 }

@@ -32,9 +32,8 @@ namespace Yammerly.ViewModels
                 bool authenticated = false;
 
                 var client = DependencyService.Get<IDataService>() as AzureService;
-                
-                authenticated = await DependencyService.Get<IAuthenticationService>().LoginAsync(client.MobileService, Microsoft.WindowsAzure.MobileServices.MobileServiceAuthenticationProvider.WindowsAzureActiveDirectory);
 
+                authenticated = await client.LoginAsync();
                 if (authenticated)
                 {
                     if (Device.OS != TargetPlatform.Android)
