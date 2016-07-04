@@ -24,7 +24,7 @@ namespace Yammerly.Services
             if (isInitialized)
                 return;
 
-            var authenticationHandler = new AuthenticationHandler();
+            var authenticationHandler = new AuthenticationRefreshHandler();
             MobileService = new MobileServiceClient("https://yammerlyproduction.azurewebsites.net", authenticationHandler)
             {
                 // Saves us from having to name things camel-case, or use custom JsonProperty attributes.
