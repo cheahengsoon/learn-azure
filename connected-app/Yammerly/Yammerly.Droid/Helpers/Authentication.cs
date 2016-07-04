@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Microsoft.WindowsAzure.MobileServices;
 using Yammerly.Services;
+using Yammerly.Helpers;
 using Plugin.CurrentActivity;
 
 [assembly: Xamarin.Forms.Dependency(typeof(Yammerly.Droid.Helpers.Authentication))]
@@ -27,7 +28,12 @@ namespace Yammerly.Droid.Helpers
                 var user = await client.LoginAsync(Xamarin.Forms.Forms.Context, provider);
 
                 if (user != null)
+                {
+                    Settings.AuthToken = user.MobileServiceAuthenticationToken;
+                    Settings.UserId = user.UserId;
+
                     return true;
+                }
 
                 return false;
             }

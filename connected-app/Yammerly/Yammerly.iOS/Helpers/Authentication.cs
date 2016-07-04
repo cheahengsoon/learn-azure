@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Yammerly.Helpers;
 using Yammerly.Services;
 
 using Microsoft.WindowsAzure.MobileServices;
@@ -21,9 +22,16 @@ namespace Yammerly.iOS.Helpers
 
             try
             {
-                await client.LoginAsync(UIApplication.SharedApplication.KeyWindow.RootViewController, provider);
+                var user = await client.LoginAsync(UIApplication.SharedApplication.KeyWindow.RootViewController, provider);
+                
+                if (user != null)
+                {
+                    Settings.AuthToken = user.MobileServiceAuthenticationToken;
+                    Settings.UserId = user.UserId;
+                    return true;
+                }
 
-                success = true;
+                return false;
             }
             catch (Exception ex)
             {

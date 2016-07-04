@@ -20,24 +20,34 @@ namespace Yammerly.Helpers
     }
 
     #region Setting Constants
-
     private const string LoggedInKey = "logged_in";
     private static readonly bool LoggedInDefault = false;
 
-    #endregion
+    private const string AuthTokenKey = "authToken";
+    private static readonly string AuthTokenDefault = string.Empty;
 
+    private const string UserIdKey = "user_id";
+    private static readonly string UserIdDefault = string.Empty;
+        #endregion
 
-    public static bool LoggedIn
+        public static bool IsLoggedIn => !string.IsNullOrWhiteSpace(UserId);
+    
+    public static string AuthToken
     {
-      get
-      {
-        return AppSettings.GetValueOrDefault<bool>(LoggedInKey, LoggedInDefault);
-      }
-      set
-      {
-        AppSettings.AddOrUpdateValue<bool>(LoggedInKey, value);
-      }
-    }
+            get
+            {
+                return AppSettings.GetValueOrDefault<string>(AuthTokenKey, AuthTokenDefault);
+            }
+            set
+            {
+                AppSettings.AddOrUpdateValue<string>(AuthTokenKey, value);
+            }
+     }
 
-  }
+        public static string UserId
+        {
+            get { return AppSettings.GetValueOrDefault<string>(UserIdKey, UserIdDefault); }
+            set { AppSettings.AddOrUpdateValue<string>(UserIdKey, value); }
+        }
+    }
 }

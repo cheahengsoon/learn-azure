@@ -10,6 +10,7 @@ using Yammerly.Service.Helpers;
 
 namespace Yammerly.Service.Controllers
 {
+    [Authorize]
     public class TimelineItemController : TableController<TimelineItem>
     {
         protected override void Initialize(HttpControllerContext controllerContext)

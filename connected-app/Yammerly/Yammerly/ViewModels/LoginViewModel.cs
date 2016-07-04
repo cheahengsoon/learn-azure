@@ -37,8 +37,6 @@ namespace Yammerly.ViewModels
 
                 if (authenticated)
                 {
-                    Settings.LoggedIn = true;
-
                     if (Device.OS != TargetPlatform.Android)
                         App.Current.MainPage = new RootPage();
                 }

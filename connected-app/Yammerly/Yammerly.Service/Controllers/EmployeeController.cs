@@ -9,6 +9,7 @@ using Yammerly.Service.Models;
 
 namespace Yammerly.Service.Controllers
 {
+    [Authorize]
     public class EmployeeController : TableController<Employee>
     {
         protected override void Initialize(HttpControllerContext controllerContext)

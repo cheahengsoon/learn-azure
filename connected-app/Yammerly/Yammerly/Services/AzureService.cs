@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Yammerly.Helpers;
 using Yammerly.Models;
 
 using Microsoft.WindowsAzure.MobileServices;
@@ -23,7 +24,8 @@ namespace Yammerly.Services
             if (isInitialized)
                 return;
 
-            MobileService = new MobileServiceClient("https://yammerlyproduction.azurewebsites.net", null)
+            var authenticationHandler = new AuthenticationHandler();
+            MobileService = new MobileServiceClient("https://yammerlyproduction.azurewebsites.net", authenticationHandler)
             {
                 // Saves us from having to name things camel-case, or use custom JsonProperty attributes.
                 SerializerSettings = new MobileServiceJsonSerializerSettings
@@ -31,6 +33,10 @@ namespace Yammerly.Services
                     CamelCasePropertyNames = true
                 }
             };
+            authenticationHandler.Client = MobileService;
+
+            MobileService.CurrentUser = new MobileServiceUser(Settings.UserId);
+            MobileService.CurrentUser.MobileServiceAuthenticationToken = Settings.AuthToken;
 
             var store = new MobileServiceSQLiteStore("app.db");
             store.DefineTable<Employee>();

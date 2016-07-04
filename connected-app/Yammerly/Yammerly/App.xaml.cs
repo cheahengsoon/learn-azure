@@ -28,11 +28,11 @@ namespace Yammerly
             {
                 DependencyService.Register<IDataService, AzureService>();
 
-                if (!Settings.LoggedIn)
+                if (!Settings.IsLoggedIn)
                     DependencyService.Get<IDataService>().Initialize();
             }
 
-            if (Settings.LoggedIn)
+            if (Settings.IsLoggedIn)
             {
                 MainPage = new RootPage();
             }

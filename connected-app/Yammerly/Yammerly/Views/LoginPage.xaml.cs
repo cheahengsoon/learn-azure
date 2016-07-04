@@ -24,7 +24,7 @@ namespace Yammerly.Views
         {
             base.OnAppearing();
 
-            if (Device.OS == TargetPlatform.Android && Settings.LoggedIn)
+            if (Device.OS == TargetPlatform.Android && Settings.IsLoggedIn)
                 App.Current.MainPage = new RootPage();
         }
     }
