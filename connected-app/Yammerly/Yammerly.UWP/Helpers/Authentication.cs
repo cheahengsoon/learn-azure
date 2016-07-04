@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Yammerly.Helpers;
+using Yammerly.Models;
 using Yammerly.Services;
+using Yammerly.Views;
 
 [assembly: Xamarin.Forms.Dependency(typeof(Yammerly.UWP.Helpers.Authentication))]
 namespace Yammerly.UWP.Helpers
@@ -25,6 +27,13 @@ namespace Yammerly.UWP.Helpers
                 {
                     Settings.AuthToken = user.MobileServiceAuthenticationToken;
                     Settings.UserId = user.UserId;
+                    
+                    var employee = await client.InvokeApiAsync<Employee>("UserInfo", System.Net.Http.HttpMethod.Get, null);
+                    Settings.FirstName = employee.FirstName;
+                    Settings.LastName = employee.LastName;
+                    Settings.PhotoUrl = employee.PhotoUrl;
+
+                    Xamarin.Forms.Application.Current.MainPage = new RootPage();
 
                     return true;
                 }

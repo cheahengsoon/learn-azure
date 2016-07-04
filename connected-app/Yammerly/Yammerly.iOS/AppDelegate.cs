@@ -23,6 +23,7 @@ namespace Yammerly.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+            ImageCircle.Forms.Plugin.iOS.ImageCircleRenderer.Init();
             global::Microsoft.WindowsAzure.MobileServices.CurrentPlatform.Init();
             SQLitePCL.CurrentPlatform.Init();
             LoadApplication(new App());

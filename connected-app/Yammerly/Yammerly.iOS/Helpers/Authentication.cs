@@ -10,6 +10,8 @@ using Microsoft.WindowsAzure.MobileServices;
 using Xamarin.Forms;
 using System.Threading.Tasks;
 using UIKit;
+using Yammerly.Models;
+using Yammerly.Views;
 
 [assembly: Xamarin.Forms.Dependency(typeof(Yammerly.iOS.Helpers.Authentication))]
 namespace Yammerly.iOS.Helpers
@@ -23,11 +25,19 @@ namespace Yammerly.iOS.Helpers
             try
             {
                 var user = await client.LoginAsync(UIApplication.SharedApplication.KeyWindow.RootViewController, provider);
-                
+
                 if (user != null)
                 {
                     Settings.AuthToken = user.MobileServiceAuthenticationToken;
                     Settings.UserId = user.UserId;
+
+                    var employee = await client.InvokeApiAsync<Employee>("UserInfo", System.Net.Http.HttpMethod.Get, null);
+                    Settings.FirstName = employee.FirstName;
+                    Settings.LastName = employee.LastName;
+                    Settings.PhotoUrl = employee.PhotoUrl;
+
+                    App.Current.MainPage = new RootPage();
+
                     return true;
                 }
 

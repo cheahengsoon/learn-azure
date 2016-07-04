@@ -47,19 +47,6 @@ namespace Yammerly.Services
             
             isInitialized = true;
         }
-
-        public async Task<bool> LoginAsync()
-        {
-            var result = await DependencyService.Get<IAuthenticationService>().LoginAsync(MobileService, MobileServiceAuthenticationProvider.WindowsAzureActiveDirectory);
-
-            // Fetch current employee profile.
-            var user = await MobileService.InvokeApiAsync<Employee>("UserInfo", System.Net.Http.HttpMethod.Get, null);
-            Settings.FirstName = user.FirstName;
-            Settings.LastName = user.LastName;
-            Settings.PhotoUrl = user.PhotoUrl;
-
-            return result;
-        }
         
         #region Data Access
         public async Task<IEnumerable<T>> GetItems<T>() where T : EntityData

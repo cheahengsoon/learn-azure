@@ -41,7 +41,6 @@
     <Compile Include="Controls\CardView.cs" />
     <Compile Include="Controls\CardViewCell.cs" />
     <Compile Include="Controls\CardViewProfileCell.cs" />
-    <Compile Include="Helpers\AuthenticationHandler.cs" />
     <Compile Include="Helpers\AuthenticationRefreshHandler.cs" />
     <Compile Include="Helpers\ServiceLocator.cs" />
     <Compile Include="Helpers\Settings.cs" />

@@ -40,8 +40,7 @@ namespace Yammerly.Views
 
                 ListViewMenu.SelectedItem = null;
             };
-
-
+            
             nameLabel.Text = $"{Settings.FirstName} {Settings.LastName}";
             profilePhoto.Source = Settings.PhotoUrl;
         }

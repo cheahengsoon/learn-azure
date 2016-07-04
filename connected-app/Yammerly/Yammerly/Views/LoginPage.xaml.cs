@@ -19,13 +19,5 @@ namespace Yammerly.Views
 
             BindingContext = new LoginViewModel();
         }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-
-            if (Device.OS == TargetPlatform.Android && Settings.IsLoggedIn)
-                App.Current.MainPage = new RootPage();
-        }
     }
 }

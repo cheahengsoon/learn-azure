@@ -9,6 +9,8 @@ using Yammerly.Views;
 
 using Xamarin.Forms;
 using Yammerly.Services;
+using Microsoft.WindowsAzure.MobileServices;
+using Yammerly.Models;
 
 namespace Yammerly.ViewModels
 {
@@ -29,16 +31,8 @@ namespace Yammerly.ViewModels
 
             try
             {
-                bool authenticated = false;
-
                 var client = DependencyService.Get<IDataService>() as AzureService;
-
-                authenticated = await client.LoginAsync();
-                if (authenticated)
-                {
-                    if (Device.OS != TargetPlatform.Android)
-                        App.Current.MainPage = new RootPage();
-                }
+                await DependencyService.Get<IAuthenticationService>().LoginAsync(client.MobileService, MobileServiceAuthenticationProvider.WindowsAzureActiveDirectory);
             }
             catch (Exception ex)
             {

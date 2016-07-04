@@ -9,7 +9,7 @@ namespace Yammerly.Controls
         public static readonly BindableProperty TextProperty =
             BindableProperty.Create(nameof(Text), typeof(string), typeof(CardViewCell), null, BindingMode.OneWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {
-                var ctrl = (CardViewCell)bindable;
+                var ctrl = (CardView)bindable;
                 ctrl.Text = (string)newValue;
             });
 
@@ -22,7 +22,7 @@ namespace Yammerly.Controls
         public static readonly BindableProperty DetailProperty =
             BindableProperty.Create(nameof(Detail), typeof(string), typeof(CardViewCell), null, BindingMode.OneWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {
-                var ctrl = (CardViewCell)bindable;
+                var ctrl = (CardView)bindable;
                 ctrl.Detail = (string)newValue;
             });
 
@@ -35,7 +35,7 @@ namespace Yammerly.Controls
         public static readonly BindableProperty ImageSourceProperty =
             BindableProperty.Create(nameof(ImageSource), typeof(ImageSource), typeof(CardViewCell), null, BindingMode.OneWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {
-                var ctrl = (CardViewCell)bindable;
+                var ctrl = (CardView)bindable;
                 ctrl.ImageSource = (ImageSource)newValue;
             });
 

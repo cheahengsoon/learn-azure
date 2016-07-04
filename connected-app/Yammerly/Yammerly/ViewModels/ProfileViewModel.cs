@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 using Yammerly.Models;
 
 using Xamarin.Forms;
+using Yammerly.Helpers;
+using Yammerly.Services;
 
 namespace Yammerly.ViewModels
 {
     public class ProfileViewModel : BaseViewModel
     {
-        public Employee Employee { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+        public string PhotoUrl { get; set; }
+
         ObservableCollection<TimelineItem> timelineItems;
         public ObservableCollection<TimelineItem> TimelineItems
         {
@@ -24,12 +29,12 @@ namespace Yammerly.ViewModels
         {
             Title = "Profile";
 
-            Employee = new Employee { FirstName = "Pierce", LastName = "Boggan", Title = "Software Engineer", PhotoUrl = "https://avatars3.githubusercontent.com/u/1091304?v=3&s=460" };
-            TimelineItems = new ObservableCollection<TimelineItem>
-            {
-                new TimelineItem { Author = Employee, Text = "Thought I showed up to see Miguel de Icaza?", PhotoUrl = "https://pbs.twimg.com/media/ChKQOQRWgAEB7hu.jpg" },
-                new TimelineItem { Author = Employee, Text = "If you're not in Mike James' session and are building apps with Azure, you need to be!", PhotoUrl = "https://sec.ch9.ms/ch9/2d33/ee514b78-c024-49bf-8341-87fd2a492d33/XE16AzureXamarin_Custom.jpg" },
-            };
+            Name = $"{Settings.FirstName} {Settings.LastName}";
+            Position = "Software Engineer";
+            PhotoUrl = Settings.PhotoUrl;
+
+            TimelineItems = new ObservableCollection<TimelineItem>();
+            ExecuteRefreshCommandAsync();
         }
 
         Command refreshCommand;
@@ -47,8 +52,14 @@ namespace Yammerly.ViewModels
 
             try
             {
-                // Refresh employees here
-
+                var client = DependencyService.Get<IDataService>() as AzureService;
+                var table = client.MobileService.GetSyncTable<TimelineItem>();
+                var items = await table.Where((item) => item.Id == Settings.UserId).ToListAsync();
+                TimelineItems.Clear();
+                foreach (var item in items)
+                {
+                    TimelineItems.Add(item);
+                }
             }
             catch (Exception ex)
             {
