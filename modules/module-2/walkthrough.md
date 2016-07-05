@@ -194,22 +194,22 @@ namespace Yammerly.Service.Helpers
         }
  ```
  
- 17. Redeploy the backend to our deployment slot. Open up Postman and perform the query, without using the `$expand` parameter. The `Author` property should now autoexpand for you.
+17. Redeploy the backend to our deployment slot. Open up Postman and perform the query, without using the `$expand` parameter. The `Author` property should now autoexpand for you.
  
- 18. Awesome! It looks like our backend checks out. Time to move this from our development deployment slot to production. Visit the `Deployment Slots` pane of your Azure Mobile App and select the deployment slot you created earlier. Click `Swap` and ensure there are no warnings and that we are deploying into production, then press `OK`.
+18. Awesome! It looks like our backend checks out. Time to move this from our development deployment slot to production. Visit the `Deployment Slots` pane of your Azure Mobile App and select the deployment slot you created earlier. Click `Swap` and ensure there are no warnings and that we are deploying into production, then press `OK`.
  
   ![](/modules/module-2/images/swap_deployment_slot.png)
   
- 19. Open up Postman and query our production site for `TimelineItem`s. We should see a HTTP 200 OK response and JSON data, with our `Author` property autoexpanded.
+19. Open up Postman and query our production site for `TimelineItem`s. We should see a HTTP 200 OK response and JSON data, with our `Author` property autoexpanded.
  
  ### Mobile App
- **Objective**:
+ **Objective**: Stuff here.
  
- 1. Now that our .NET backend is configured and deployed, it's time to connect to it. Because we already are setup to handle data from our Mobile App, no changes are needed to pull down employees. Run the app, and you will see employees load fine. The client is completely agnostic of the backend, so whether you have a no-code backend with Easy Tables or an ASP.NET backend, the client doesn't care!
+1. Now that our .NET backend is configured and deployed, it's time to connect to it. Because we already are setup to handle data from our Mobile App, no changes are needed to pull down employees. Run the app, and you will see employees load fine. The client is completely agnostic of the backend, so whether you have a no-code backend with Easy Tables or an ASP.NET backend, the client doesn't care!
  
- 2. Now that we have a functioning backend for `TimelineItem`s, let's take our "MVP" up to a full-blown app. Open up `App.xaml.cs` and change `MainPage` to be a new `RootPage`.
+2. Now that we have a functioning backend for `TimelineItem`s, let's take our "MVP" up to a full-blown app. Open up `App.xaml.cs` and change `MainPage` to be a new `RootPage`.
  
- 3. Next, we need to setup our `AzureService` to handle `TimelineItem`s. Add a line of code after initializing the `MobileSQLiteStore` to define the `TimelineItem` table:
+3. Next, we need to setup our `AzureService` to handle `TimelineItem`s. Add a line of code after initializing the `MobileSQLiteStore` to define the `TimelineItem` table:
  
   ```csharp
   store.DefineTable<TimelineItem>();
