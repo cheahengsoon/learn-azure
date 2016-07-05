@@ -202,8 +202,8 @@ namespace Yammerly.Service.Helpers
   
 19. Open up Postman and query our production site for `TimelineItem`s. We should see a HTTP 200 OK response and JSON data, with our `Author` property autoexpanded.
  
- ### Mobile App
- **Objective**: Stuff here.
+### Mobile App
+**Objective**: Stuff here.
  
 1. Now that our .NET backend is configured and deployed, it's time to connect to it. Because we already are setup to handle data from our Mobile App, no changes are needed to pull down employees. Run the app, and you will see employees load fine. The client is completely agnostic of the backend, so whether you have a no-code backend with Easy Tables or an ASP.NET backend, the client doesn't care!
  
