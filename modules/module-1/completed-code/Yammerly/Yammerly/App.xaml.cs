@@ -19,7 +19,7 @@ namespace Yammerly
         {
             InitializeComponent();
 
-            PresentMainPage(true);
+            PresentMainPage(useMock: false);
         }
 
         void PresentMainPage(bool useMock = true)

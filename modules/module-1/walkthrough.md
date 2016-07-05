@@ -42,3 +42,105 @@
 11. Once the data is uploaded, you should be able to click the `Employee` table and see populated data. From this dialog, you can alter schema, manage permissions, and delete data (very similar to how Azure Mobile Services) used to function.
 
 ### Mobile App
+**Objective**: Communicate with an Azure Mobile Apps backend, including implementing online/offline synchronization and automatic conflict handling.
+
+1. To pull down data from our Azure Mobile App backend, we need to use the [Microsoft.Azure.Mobile.Client SDK](), which has already been added as a NuGet reference for you. Open `Yammerly/Services/AzureService`. Let's add the code here to do online/offline sync and communicate with our backend.
+
+2. `Initialize` will be used to configure the `MobileServiceClient`, which handles communication with our backend, as well as online/offline sync for us.
+
+ ```csharp
+        public async Task Initialize()
+        {
+            if (isInitialized)
+                return;
+
+            // MobileServiceClient handles communication with our backend, auth, and more for us.
+            MobileService = new MobileServiceClient("https://azure-training.azurewebsites.net", null)
+            {
+                // Saves us from having to name things camel-case, or use custom JsonProperty attributes.
+                SerializerSettings = new MobileServiceJsonSerializerSettings
+                {
+                    CamelCasePropertyNames = true
+                }
+            };
+
+            // Configure online/offline sync.
+            var store = new MobileServiceSQLiteStore("app.db");
+            store.DefineTable<Employee>();
+            await MobileService.SyncContext.InitializeAsync(store);
+
+            isInitialized = true;
+        }
+ ```
+
+3. Now that our `MobileServiceClient` is initialized, let's write some helper methods for handling CRUD operations, as well as syncing.
+
+ ```csharp
+        public async Task<IEnumerable<T>> GetItems<T>() where T : EntityData
+        {
+            await Initialize();
+
+            await SyncItems<T>();
+            return await MobileService.GetSyncTable<T>().ToEnumerableAsync();
+        }
+
+        public async Task<T> GetItem<T>(string id) where T : EntityData
+        {
+            await Initialize();
+
+            await SyncItems<T>();
+
+            return await MobileService.GetSyncTable<T>().LookupAsync(id);
+        }
+
+        public async Task AddItem<T>(T item) where T : EntityData
+        {
+            await Initialize();
+
+            await MobileService.GetSyncTable<T>().InsertAsync(item);
+            await SyncItems<T>();
+        }
+
+        public async Task UpdateItem<T>(T item) where T : EntityData
+        {
+            await Initialize();
+
+            await MobileService.GetSyncTable<T>().UpdateAsync(item);
+            await SyncItems<T>();
+        }
+
+        public async Task RemoveItem<T>(T item) where T : EntityData
+        {
+            await Initialize();
+
+            await MobileService.GetSyncTable<T>().DeleteAsync(item);
+            await SyncItems<T>();
+        }
+
+        public async Task SyncItems<T>() where T : EntityData
+        {
+            await Initialize();
+
+            try
+            {
+                await MobileService.SyncContext.PushAsync();
+                await MobileService.GetSyncTable<T>().PullAsync($"all{typeof(T).Name}", MobileService.GetSyncTable<T>().CreateQuery());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during Sync occurred: {ex.Message}");
+            }
+        }
+ ```
+
+4. Update `App.xaml.cs` to use our `AzureService` instead of a `MockService`.
+
+ ```csharp
+ PresentMainPage(useMock: false);
+ ```
+
+5. Run the app. We are now pulling down data from our Azure backend in just a few lines of code. If you turn off internet on your machine, you will notice that the app continues to run and load data properly.
+
+[Conflict Handling]
+
+Easy Tables are a great way to get started with building an Azure backend. For many apps, Easy Tables works great, but it has one key limitation: relationships should not be done using Easy Tables. For that, we need to opt for using the "full-fledged" Azure Mobile Apps. In the next module, we will take a look at building a fully-customizable backend with ASP.NET Web API.
