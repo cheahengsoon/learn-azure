@@ -202,8 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Authentication.cs" />
-    <Compile Include="Helpers\PushConstants.cs" />
-    <Compile Include="Helpers\PushService.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

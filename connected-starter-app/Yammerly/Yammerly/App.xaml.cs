@@ -19,10 +19,16 @@ namespace Yammerly
         {
             InitializeComponent();
 
-            bool useMock = false;
+            PresentMainPage(true);
+        }
+
+        void PresentMainPage(bool useMock = true)
+        {
             if (useMock)
             {
                 DependencyService.Register<IDataService, MockService>();
+
+                MainPage = new EmployeesPage();
             }
             else
             {
@@ -30,18 +36,15 @@ namespace Yammerly
 
                 if (!Settings.IsLoggedIn)
                     DependencyService.Get<IDataService>().Initialize();
-            }
 
-            if (Settings.IsLoggedIn)
-            {
-                MainPage = new RootPage();
-            }
-            else
-            {
-                if (Device.OS != TargetPlatform.Android)
+                if (Settings.IsLoggedIn)
+                {
                     MainPage = new LoginPage();
+                }
                 else
-                    MainPage = new NavigationPage(new LoginPage());
+                {
+                    MainPage = new EmployeesPage();
+                }
             }
         }
 
