@@ -4,7 +4,7 @@
 * Download the [starter code](http://www.google.com) for this module.
 
 ### Instructions
-#### Backend Configuration
+#### Backend
 **Objective**:
 
 1. Head over to the Azure Portal at [portal.azure.com](portal.azure.com).
@@ -32,3 +32,13 @@
 [Image]
 
 9. After the data connection has been created, you should be able to create an Easy Tables backend by clicking `Initialize App`. Note that this _will overwrite_ all site contents, so don't configure Easy Tables on an existing app.
+
+[Image]
+
+10. Now that our no-code backend is created, it's time to add a table and some data. Easy Tables has an awesome feature in preview that allows you to create a table and populate it with existing data from a CSV file. This is great for situations with existing data. Click `Add from CSV` and upload the `employee_data.csv` file in the `/module-1/` directory. Be sure to change the table name to `Employee`, and click `Start Upload`.
+
+[Image]
+
+11. Once the data is uploaded, you should be able to click the `Employee` table and see populated data. From this dialog, you can alter schema, manage permissions, and delete data (very similar to how Azure Mobile Services) used to function.
+
+### Mobile App
