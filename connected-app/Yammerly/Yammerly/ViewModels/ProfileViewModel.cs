@@ -9,14 +9,34 @@ using Yammerly.Models;
 using Xamarin.Forms;
 using Yammerly.Helpers;
 using Yammerly.Services;
+using Plugin.Media.Abstractions;
+using Plugin.Media;
 
 namespace Yammerly.ViewModels
 {
     public class ProfileViewModel : BaseViewModel
     {
-        public string Name { get; set; }
-        public string Position { get; set; }
-        public string PhotoUrl { get; set; }
+        private string name;
+        private string position;
+        private string photoUrl;
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value;  OnPropertyChanged("Name"); }
+        }
+
+        public string Position
+        {
+            get { return position; }
+            set { position = value;  OnPropertyChanged("Position"); }
+        }
+
+        public string PhotoUrl
+        {
+            get { return photoUrl; }
+            set { photoUrl = value;  OnPropertyChanged("PhotoUrl"); }
+        }
 
         ObservableCollection<TimelineItem> timelineItems;
         public ObservableCollection<TimelineItem> TimelineItems
@@ -60,6 +80,58 @@ namespace Yammerly.ViewModels
                 {
                     TimelineItems.Add(item);
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ERROR: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        Command changeProfilePhotoCommand;
+        public Command ChangeProfilePhotoCommand
+        {
+            get { return changeProfilePhotoCommand ?? (changeProfilePhotoCommand = new Command(async () => await ExecuteChangeProfilePhotoCommandAsync())); }
+        }   
+
+        async Task ExecuteChangeProfilePhotoCommandAsync()
+        {
+            if (IsBusy)
+                return;
+
+            IsBusy = true;
+
+            try
+            {
+                await CrossMedia.Current.Initialize();
+
+                MediaFile file;
+                if (CrossMedia.Current.IsCameraAvailable)
+                {
+                    file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
+                    {
+                        Directory = "Photos",
+                        Name = "photo.jpg"
+                    });
+                }
+                else
+                {
+                    file = await CrossMedia.Current.PickPhotoAsync();
+                }
+
+                var client = DependencyService.Get<IDataService>() as AzureService;
+                var url = await client.StoreBlob(file.GetStream());
+                Settings.PhotoUrl = url;
+
+                // Bug #28514
+                PhotoUrl = url;
+
+                var user = await client.GetItem<Employee>(Settings.UserId);
+                user.PhotoUrl = url;
+                await client.UpdateItem(user);
             }
             catch (Exception ex)
             {

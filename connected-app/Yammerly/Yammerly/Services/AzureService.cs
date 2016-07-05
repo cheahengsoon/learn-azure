@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Yammerly.Helpers;
 using Yammerly.Models;
 
 using Microsoft.WindowsAzure.MobileServices;
-using Microsoft.WindowsAzure.MobileServices.Sync;
 using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
-using Xamarin.Forms;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Yammerly.Services
 {
@@ -47,7 +46,32 @@ namespace Yammerly.Services
             
             isInitialized = true;
         }
-        
+
+        public async Task<string> StoreBlob(Stream file)
+        {
+            string url;
+
+            try
+            {
+                // Get the storage token from the custom API
+                var storageToken = await MobileService.InvokeApiAsync<StorageToken>("Storage", HttpMethod.Get, null);
+                var storageUri = new Uri($"{storageToken.Uri}{storageToken.SasToken}");
+
+                var blob = new CloudBlockBlob(storageUri);
+                await blob.UploadFromStreamAsync(file);
+
+                url = blob.Uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"An error occurred breakage: {ex.Message}");
+
+                throw ex;
+            }
+
+            return url;
+        }
+
         #region Data Access
         public async Task<IEnumerable<T>> GetItems<T>() where T : EntityData
         {
@@ -55,6 +79,15 @@ namespace Yammerly.Services
 
             await SyncItems<T>();
             return await MobileService.GetSyncTable<T>().ToEnumerableAsync();
+        }
+
+        public async Task<T> GetItem<T>(string id) where T : EntityData
+        {
+            await Initialize();
+
+            await SyncItems<T>();
+
+            return await MobileService.GetSyncTable<T>().LookupAsync(id);
         }
 
         public async Task AddItem<T>(T item) where T : EntityData

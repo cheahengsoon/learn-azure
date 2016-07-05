@@ -29,12 +29,12 @@ namespace Yammerly.iOS.Helpers
                 if (user != null)
                 {
                     Settings.AuthToken = user.MobileServiceAuthenticationToken;
-                    Settings.UserId = user.UserId;
 
                     var employee = await client.InvokeApiAsync<Employee>("UserInfo", System.Net.Http.HttpMethod.Get, null);
                     Settings.FirstName = employee.FirstName;
                     Settings.LastName = employee.LastName;
                     Settings.PhotoUrl = employee.PhotoUrl;
+                    Settings.UserId = employee.Id;
 
                     App.Current.MainPage = new RootPage();
 

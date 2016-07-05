@@ -22,8 +22,7 @@ namespace Yammerly.Views
 
             BindingContext = new BaseViewModel
             {
-                Title = "Yammerly"
-                // Icon =
+                Icon = "menu@2x.png"
             };
 
             NavigateAsync(MenuType.Timeline);

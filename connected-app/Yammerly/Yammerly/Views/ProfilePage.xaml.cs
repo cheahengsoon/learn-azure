@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Yammerly.ViewModels;
 
 using Xamarin.Forms;
+using Yammerly.Services;
 
 namespace Yammerly.Views
 {

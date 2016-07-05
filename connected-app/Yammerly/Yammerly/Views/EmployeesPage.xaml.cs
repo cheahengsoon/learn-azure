@@ -22,7 +22,7 @@ namespace Yammerly.Views
             {
                 var toolbarItem = new ToolbarItem
                 {
-                    Text = "Refresh",
+                    Icon = "refresh.png",
                     Command = ViewModel.RefreshCommand
                 };
 

@@ -29,6 +29,8 @@ namespace Yammerly.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
             ImageCircle.Forms.Plugin.Droid.ImageCircleRenderer.Init();
             LoadApplication(new App());
+
+            ConfigurePushNotifications();
         }
 
         void ConfigurePushNotifications()
