@@ -9,21 +9,21 @@
 
 1. Navigate to the [Google Cloud Console](https://console.cloud.google.com/), and sign in with your Google credentials. Click `Create New Project`.
  
- ![](/modules/module-3/images/create_new_project.png)
+ ![](/modules/module-4/images/create_new_project.png)
 
 2. Name the project. Click `Create`.
 
- ![](/modules/module-3/images/name_project.png)
+ ![](/modules/module-4/images/name_project.png)
 
 3. Copy your `Project Number` in the app's dashboard. This will be used later as the `SenderId`.
  
- ![](/modules/module-3/images/project_number.png)
+ ![](/modules/module-4/images/project_number.png)
 
 4. Click `Enable and Manage API`. Select `Google Cloud Messaging`, then click `Enable`.
 
 5. Navigate to `Crendentials`, click `Create Credentials->API key`. Select `Server key`, give your key a name, and then click `Create`. Copy your API key generated.
 
- ![](/modules/module-3/images/create_credentials.png)
+ ![](/modules/module-4/images/create_credentials.png)
 
 #### Backend
 
@@ -31,11 +31,11 @@
 
 2. Enter a name, namespace, and region for your Notification Hub to be hosted in, then select `Create`.
 
- ![](/modules/module-3/images/create_notification_hub.png)
+ ![](/modules/module-4/images/create_notification_hub.png)
 
 3. Click `Settings`, `Notification Services`, `Google (GCM)`, and paste in the API key you copied earlier. Press the `Save` button.
 
- ![](/modules/module-3/images/notification_hub_configure.png)
+ ![](/modules/module-4/images/notification_hub_configure.png)
 
 Backend configuration is now complete for the Notification Hub. It's time to consume our notification hub from the Yammerly Android app!
 
@@ -161,4 +161,4 @@ namespace Yammerly.Droid.Helpers
 
  5. Visit the Azure Notification Hub portal and click `Test Send`. Select the `Android` platform, then press `Send`. You should notice the notification appear on the device.
 
-  ![](/modules/module-3/images/notification_hub_configure.png)
+  ![](/modules/module-4/images/notification_hub_configure.png)
