@@ -36,6 +36,9 @@ namespace Yammerly.Services
             };
             handler.Client = MobileService;
 
+            MobileService.CurrentUser = new MobileServiceUser(Settings.UserId);
+            MobileService.CurrentUser.MobileServiceAuthenticationToken = Settings.AuthToken;
+
             // Configure online/offline sync.
             var store = new MobileServiceSQLiteStore("app.db");
             store.DefineTable<Employee>();

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Yammerly.Views.LoginPage"
+    Title="Sign In"
+    BackgroundImage="LoginBackground.png">
+  <StackLayout Padding="10,0,10,0" HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Spacing="25">
+    <Label HorizontalTextAlignment="Center" Text="Yammerly" TextColor="White" FontSize="42" />
+    <Button Command="{Binding LoginCommand}" BackgroundColor="White" TextColor="Black" Text="Login with Azure AD" />
+    <Label HorizontalTextAlignment="Center" TextColor="White" FontSize="14" Text="Yammerly authenticates users by using Azure Active Directory. Logged in users gain access to the corporate timeline and employee directory." />
+  </StackLayout>
+</ContentPage>

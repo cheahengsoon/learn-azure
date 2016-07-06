@@ -489,6 +489,9 @@ namespace Yammerly.Helpers
                 }
             };
             handler.Client = MobileService;
+
+            MobileService.CurrentUser = new MobileServiceUser(Settings.UserId);
+            MobileService.CurrentUser.MobileServiceAuthenticationToken = Settings.AuthToken;
  ```
 
 3. We need to actually call our login logic. Jump over to `LoginViewModel` and update the `ExecuteLoginCommandAsync` method to use our `DependencyService` to log the user in.
