@@ -1,164 +1,201 @@
-# Module 4: Add push with Azure Notification Hubs.
+# Module 5. Add blob storage with Azure Storage.
 
 ### Prerequisites
 * Download the [starter code](http://www.google.com) for this module.
 
 ### Instructions
-#### Google Cloud Messaging
-**Objective**: Add push notifications to our Yammer clone.
-
-1. Navigate to the [Google Cloud Console](https://console.cloud.google.com/), and sign in with your Google credentials. Click `Create New Project`.
- 
- ![](/modules/module-3/images/create_new_project.png)
-
-2. Name the project. Click `Create`.
-
- ![](/modules/module-3/images/name_project.png)
-
-3. Copy your `Project Number` in the app's dashboard. This will be used later as the `SenderId`.
- 
- ![](/modules/module-3/images/project_number.png)
-
-4. Click `Enable and Manage API`. Select `Google Cloud Messaging`, then click `Enable`.
-
-5. Navigate to `Crendentials`, click `Create Credentials->API key`. Select `Server key`, give your key a name, and then click `Create`. Copy your API key generated.
-
- ![](/modules/module-3/images/create_credentials.png)
-
 #### Backend
+**Objective**: Add blob storage to our Yammerly clone.
 
-1. Navigate to your resource group in the Azure Portal. Search for `Notification Hub`, select the row, and click `Create`.
+1. Navigate to the Azure Portal and create a new `Storage Account`. Click `Create`.
 
-2. Enter a name, namespace, and region for your Notification Hub to be hosted in, then select `Create`.
+  ![](/modules/module-5/images/create_new_storage_account.png)
 
- ![](/modules/module-3/images/create_notification_hub.png)
+2. Click `Blobs`, then add a new container named `images`. Set the `Access Type` to `Blob`. Click `Create`.
 
-3. Click `Settings`, `Notification Services`, `Google (GCM)`, and paste in the API key you copied earlier. Press the `Save` button.
+  ![](/modules/module-5/images/create_new_container.png)
 
- ![](/modules/module-3/images/notification_hub_configure.png)
+3. In the `Settings` for your Azure Mobile App, click `Data Connections->Add`. Change the type to `Storage` and select your `Azure Storage` account.
+ 
+  ![](/modules/module-5/images/add_data_connection.png)
 
-Backend configuration is now complete for the Notification Hub. It's time to consume our notification hub from the Yammerly Android app!
+4. Add the `WindowsAzure.Storage` NuGet to the `Yammerly.Service` project.
 
-#### Mobile Apps
-
-1. Open up the Yammerly.Droid solution, and a new class named `PushConstants` to the `Helpers` directory. Add three fields: `SenderId`, `ListenConnectionString`, and `NotificationHubName`. `SenderId` is the Google project number you saved earlier. `ListenConnectionString` can be found in the `Access Policies` section of your notification hub's settings.`NotificationHubName` is just your notification hub name.
-
- ```csharp
-    public class PushConstants
-    {
-        public const string SenderId = "257308349779";
-        public const string ListenConnectionString = "Endpoint=sb://azuretrainingrunthroughnamespace.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=Y1oas1E4aQb3jcmfhcvU1ftPEPdTeSugMRklI3jKvek=";
-        public const string NotificationHubName = "azuretrainingrunthrough";
-    }
- ```
-
-2. Now that we have our required values for push notifications, let's add some code to handle them when they arrive. Add a new class to the `Helpers` directory named `PushService` that will register the device to receive push notifications, and handle incoming push notifications.
+5. Add a new `Web API 2 Controller - Empty` and name it `StorageController`. Copy the following code into the class:
 
  ```csharp
- using System;
+ using Microsoft.Azure.Mobile.Server.Config;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+
+using Microsoft.Azure;
+using System.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using System.IO;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System.Text;
+using System.Diagnostics;
+using Yammerly.Service.DataObjects;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Gcm;
-using WindowsAzure.Messaging;
-
-namespace Yammerly.Droid.Helpers
+namespace Yammerly.Service.Controllers
 {
-    [BroadcastReceiver(Permission = Constants.PERMISSION_GCM_INTENTS)]
-    [IntentFilter(new[] { Intent.ActionBootCompleted })] // Allow GCM on boot and when app is closed   
-    [IntentFilter(new string[] { Constants.INTENT_FROM_GCM_MESSAGE },
-        Categories = new string[] { "@PACKAGE_NAME@" })]
-    [IntentFilter(new string[] { Constants.INTENT_FROM_GCM_REGISTRATION_CALLBACK },
-        Categories = new string[] { "@PACKAGE_NAME@" })]
-    [IntentFilter(new string[] { Constants.INTENT_FROM_GCM_LIBRARY_RETRY },
-        Categories = new string[] { "@PACKAGE_NAME@" })]
-    public class SampleGcmBroadcastReceiver : GcmBroadcastReceiverBase<PushService>
+    [Authorize]
+    [MobileAppController]
+    public class StorageController : ApiController
     {
-        //IMPORTANT: Change this to your own Sender ID!
-        //The SENDER_ID is your Google API Console App Project Number
-        public static string[] SENDER_IDS = { PushConstants.SenderId };
-    }
-
-    [Service] //Must use the service tag
-    public class PushService : GcmServiceBase
-    {
-        static NotificationHub hub;
-
-        // Call from MainActivity
-        public static void Initialize(Context context)
+        public StorageController()
         {
-            hub = new NotificationHub(PushConstants.NotificationHubName, PushConstants.ListenConnectionString, context);
+            ConnectionString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_MS_AzureStorageAccountConnectionString", EnvironmentVariableTarget.Process);
+            StorageAccount = CloudStorageAccount.Parse(ConnectionString);
+            BlobClient = StorageAccount.CreateCloudBlobClient();
         }
 
-        public static void Register(Context Context)
-        {
-            GcmClient.Register(Context, SampleGcmBroadcastReceiver.SENDER_IDS);
-        }
+        public string ConnectionString { get; set; }
 
-        public PushService() : base(SampleGcmBroadcastReceiver.SENDER_IDS)
-        {
-        }
+        public CloudStorageAccount StorageAccount { get; set; }
 
-        protected override void OnRegistered(Context context, string registrationId)
-        {
-            if (hub != null)
-                hub.Register(registrationId, "TEST");
-        }
+        public CloudBlobClient BlobClient { get; set; }
 
-        protected override void OnUnRegistered(Context context, string registrationId)
+        public async Task<StorageToken> Get()
         {
-            if (hub != null)
-                hub.Unregister();
-        }
+            var container = BlobClient.GetContainerReference("images");
 
-        protected override void OnMessage(Context context, Intent intent)
-        {
-            Console.WriteLine("Received Notification");
-
-            //Push Notification arrived - print out the keys/values
-            if (intent != null || intent.Extras != null)
+            try
             {
-
-                var keyset = intent.Extras.KeySet();
-
-                foreach (var key in intent.Extras.KeySet())
-                    Console.WriteLine("Key: {0}, Value: {1}", key, intent.Extras.GetString(key));
+                await container.CreateIfNotExistsAsync();
             }
-        }
+            catch (StorageException ex)
+            {
+                Debug.WriteLine($"[GetStorageTokenController] Cannot create container: {ex.Message}");
+            }
 
-        protected override bool OnRecoverableError(Context context, string errorId)
-        {
-            //Some recoverable error happened
-            return true;
-        }
+            // Create a blob URI - based on a GUID
+            var blobName = $"{Guid.NewGuid().ToString("N")}.jpg";
+            var blob = container.GetBlockBlobReference(blobName);
 
-        protected override void OnError(Context context, string errorId)
-        {
-            //Some more serious error happened
+            // Create a policy for the blob access
+            var blobPolicy = new SharedAccessBlobPolicy
+            {
+                // Set start time to five minutes before now to avoid clock skew.
+                SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
+                // Allow Access for the next 60 minutes (according to Azure)
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(60),
+                // Allow read, write and create permissions
+                Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create
+            };
+
+            return new StorageToken
+            {
+                Name = blobName,
+                Uri = blob.Uri,
+                SasToken = blob.GetSharedAccessSignature(blobPolicy)
+            };
+
         }
     }
 }
-```
+ ```
 
-3. Add a new method to `MainActivity` named `ConfigurePushNotifications` and call it from `OnCreate`. This will handle initialization of the Google Cloud Messaging Service as well as register the device for Google Cloud Messenging.
+ 6. Redeploy the backend.
+
+#### Mobile Apps
+
+1. Next, we need to call our `StorageController` from our mobile app to grab storage tokens, and finally store files off to Azure Storage. We can use this endpoint to store files.
 
  ```csharp
-        public void ConfigurePushNotifications()
+         public async Task<string> StoreBlob(Stream file)
         {
-            PushService.Initialize(this);
-            PushService.Register(this);
+            string url;
+
+            try
+            {
+                // Get the storage token from the custom API
+                var storageToken = await MobileService.InvokeApiAsync<StorageToken>("Storage", HttpMethod.Get, null);
+                var storageUri = new Uri($"{storageToken.Uri}{storageToken.SasToken}");
+
+                var blob = new CloudBlockBlob(storageUri);
+                await blob.UploadFromStreamAsync(file);
+
+                url = blob.Uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"An error occurred breakage: {ex.Message}");
+
+                throw ex;
+            }
+
+            return url;
         }
  ```
 
- 4. Run your app in an emulator that supports the Google APIs. Your device will be registered with Google Cloud Messaging and the Azure Notification Hub.
+2. Let's add code to allow users to change their profile photo. Jump over to `ProfileViewModel` and add the following to your `ExecuteChangeProfilePhotoCommandAsync` method.
 
- 5. Visit the Azure Notification Hub portal and click `Test Send`. Select the `Android` platform, then press `Send`. You should notice the notification appear on the device.
+ ```csharp
+                 await CrossMedia.Current.Initialize();
 
-  ![](/modules/module-3/images/notification_hub_configure.png)
+                MediaFile file;
+                if (CrossMedia.Current.IsCameraAvailable)
+                {
+                    file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
+                    {
+                        Directory = "Photos",
+                        Name = "photo.jpg"
+                    });
+                }
+                else
+                {
+                    file = await CrossMedia.Current.PickPhotoAsync();
+                }
+
+                var client = DependencyService.Get<IDataService>() as AzureService;
+                var url = await client.StoreBlob(file.GetStream());
+                Settings.PhotoUrl = url;
+                PhotoUrl = url;
+
+                var user = await client.GetItem<Employee>(Settings.UserId);
+                user.PhotoUrl = url;
+                await client.UpdateItem(user);
+ ```
+
+3. Let's add code to allow users to post to our corporate timeline. Open up `TimelineViewController` and add the following code to `ExecutePostTimelineItemCommandAsync`.
+
+ ```csharp
+                 await CrossMedia.Current.Initialize();
+
+                MediaFile file;
+                if (CrossMedia.Current.IsCameraAvailable)
+                {
+                    file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
+                    {
+                        Directory = "TimelineItems",
+                        Name = "photo.jpg"
+                    });
+                }
+                else
+                {
+                    file = await CrossMedia.Current.PickPhotoAsync();
+                }
+
+                var client = DependencyService.Get<IDataService>() as AzureService;
+                var author = await client.GetItem<Employee>(Settings.UserId);
+                var url = await client.StoreBlob(file.GetStream());
+                var text = "Having a blast at this Azure workshop!";
+
+                var timelineItem = new TimelineItem
+                {
+                    Author = author,
+                    Text = text,
+                    PhotoUrl = url
+                };
+
+                TimelineItems.Add(timelineItem);
+                await client.AddItem<TimelineItem>(timelineItem);
+ ```
+
+ 4. Run the app, and post to the feed. We now have a working app with Azure Storage!

@@ -48,6 +48,33 @@ namespace Yammerly.Services
             isInitialized = true;
         }
 
+        public async Task<string> StoreBlob(Stream file)
+        {
+            await Initialize();
+
+            string url;
+
+            try
+            {
+                // Get the storage token from the custom API
+                var storageToken = await MobileService.InvokeApiAsync<StorageToken>("Storage", HttpMethod.Get, null);
+                var storageUri = new Uri($"{storageToken.Uri}{storageToken.SasToken}");
+
+                var blob = new CloudBlockBlob(storageUri);
+                await blob.UploadFromStreamAsync(file);
+
+                url = blob.Uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"An error occurred breakage: {ex.Message}");
+
+                throw ex;
+            }
+
+            return url;
+        }
+
         #region Data Access
         public async Task<IEnumerable<T>> GetItems<T>() where T : EntityData
         {
