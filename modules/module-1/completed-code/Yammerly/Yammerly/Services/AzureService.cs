@@ -10,6 +10,7 @@ using Yammerly.Models;
 using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.MobileServices.Sync;
 
 namespace Yammerly.Services
 {
@@ -37,7 +38,7 @@ namespace Yammerly.Services
             // Configure online/offline sync.
             var store = new MobileServiceSQLiteStore("app.db");
             store.DefineTable<Employee>();
-            await MobileService.SyncContext.InitializeAsync(store);
+            await MobileService.SyncContext.InitializeAsync(store, new SyncHandler(MobileService));
 
             isInitialized = true;
         }

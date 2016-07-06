@@ -34,6 +34,7 @@ namespace Yammerly
             {
                 DependencyService.Register<IDataService, AzureService>();
 
+                /*
                 if (!Settings.IsLoggedIn)
                     DependencyService.Get<IDataService>().Initialize();
 
@@ -44,7 +45,9 @@ namespace Yammerly
                 else
                 {
                     MainPage = new EmployeesPage();
-                }
+                }*/
+
+                MainPage = new EmployeesPage();
             }
         }
 

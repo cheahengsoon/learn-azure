@@ -133,14 +133,93 @@
         }
  ```
 
-4. Update `App.xaml.cs` to use our `AzureService` instead of a `MockService`.
+4. We want to handle sync conflicts gracefully. By default, "last write wins" is the conflict resolutions strategy. If you look at our `EntityData` model, you will notice there is a `Version` property; this is updated everytime there is a POST, PATCH, or DELETE operation performed on the server. If we have an issue now, the server will return a `412 Precondition Failed` response. We have several choices when it comes to conflict resolution: "client wins", "server wins", merge results, or let the the user select. In this case, we will elect to let the user decide, though it depends on the particular situation. Let's update our `AzureService` to handle this. Add a new class named `SyncHandler` to the `Helpers` folder (code below), which will prompt the user to select which version is correct in the event of a conflict.
+
+ ```csharp
+using Microsoft.WindowsAzure.MobileServices;
+using Microsoft.WindowsAzure.MobileServices.Sync;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Yammerly.Helpers
+{
+    public class SyncHandler : IMobileServiceSyncHandler
+    {
+        MobileServiceClient client;
+
+        public SyncHandler(MobileServiceClient client)
+        {
+            this.client = client;
+        }
+
+        public async Task<JObject> ExecuteTableOperationAsync(IMobileServiceTableOperation operation)
+        {
+            MobileServicePreconditionFailedException ex;
+            JObject result = null;
+
+            do
+            {
+                ex = null;
+                try
+                {
+                    result = await operation.ExecuteAsync();
+                }
+                catch (MobileServicePreconditionFailedException e)
+                {
+                    ex = e;
+                }
+
+                // There was a conflict in the server
+                if (ex != null)
+                {
+                    // Grabs the server item from the exception. If not available, fetch it.
+                    var serverItem = ex.Value;
+                    if (serverItem == null)
+                    {
+                        serverItem = (JObject)(await operation.Table.LookupAsync((string)operation.Item["id"]));
+                    }
+
+                    // Prompt user action
+                    var userAction = await App.Current.MainPage.DisplayAlert("Conflict Occurred", "Select which version to keep.", "Server", "Client");
+
+                    if (userAction)
+                    {
+                        return serverItem;
+                    }
+                    else
+                    {
+                        // Overwrite the server version and try the operation again by continuing the loop.
+                        operation.Item[MobileServiceSystemColumns.Version] = serverItem[MobileServiceSystemColumns.Version];
+                    }
+                }
+            } while (ex != null);
+
+            return result;
+        }
+        
+        public Task OnPushCompleteAsync(MobileServicePushCompletionResult result)
+        {
+            return Task.FromResult(0);
+        }
+    }
+}
+ ```
+
+5. Update `AzureService`'s `SyncContext` to use our `SyncHandler` for processing sync.
+
+ ```csharp
+ await MobileService.SyncContext.InitializeAsync(store, new SyncHandler(MobileService));
+ ```
+6. Update `App.xaml.cs`to use our `AzureService` instead of a `MockService`.
 
  ```csharp
  PresentMainPage(useMock: false);
  ```
 
-5. Run the app. We are now pulling down data from our Azure backend in just a few lines of code. If you turn off internet on your machine, you will notice that the app continues to run and load data properly.
-
-[Conflict Handling]
+7. Run the app. We are now pulling down data from our no-code Azure Easy Tables backend in just a few lines of (mostly) boilerplate code. If you turn off the internet on your machine and restart the app, you will notice that the app continues to run and load data properly.
 
 Easy Tables are a great way to get started with building an Azure backend. For many apps, Easy Tables works great, but it has one key limitation: relationships should not be done using Easy Tables. For that, we need to opt for using the "full-fledged" Azure Mobile Apps. In the next module, we will take a look at building a fully-customizable backend with ASP.NET Web API.
