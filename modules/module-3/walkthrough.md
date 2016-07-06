@@ -480,7 +480,7 @@ namespace Yammerly.Helpers
 
  ```csharp
              var handler = new AuthenticationRefreshHandler();
-            MobileService = new MobileServiceClient("https://azure-training.azurewebsites.net", null)
+            MobileService = new MobileServiceClient("https://azure-training.azurewebsites.net", handler)
             {
                 // Saves us from having to name things camel-case, or use custom JsonProperty attributes.
                 SerializerSettings = new MobileServiceJsonSerializerSettings
