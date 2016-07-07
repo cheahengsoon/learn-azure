@@ -1,5 +1,6 @@
 # Additional Module: Microsoft Cognitive Services
 **Objective**: Identify employees from a photo using facial recognition and Microsoft Cognitive Services.
+
 **Estimated Effort**: 15 minutes
 
 ###### Prerequisites
