@@ -10,7 +10,6 @@
 
 ### Instructions
 ##### Backend
-**Objective**:
 
 1. Head over to the Azure Portal at [portal.azure.com](portal.azure.com). This is the central location from which we will create and manage resources for our Azure backend.
 
