@@ -1,7 +1,7 @@
 # Module 4: Add push notifications with Azure Notification Hubs.
 **Objective**: Add push notifications to our Android Yammerly application using Azure Notification Hubs, and learn how to send both broadcast and templated push notifications.
 
-**Estimated Effort**: 40 minutes
+**Estimated Effort**: 25 minutes
 
 ###### Prerequisites
 * Visual Studio 2015 Community Edition (or higher)
