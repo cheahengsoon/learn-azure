@@ -1,7 +1,7 @@
 # Module 1: Create a no-code backend with Azure Easy Tables.
 
 ### Prerequisites
-* Download the [starter code](http://www.google.com) for this module.
+* Download the [starter code](/modules/module-1/starter-code/) for this module.
 
 ### Instructions
 #### Backend
