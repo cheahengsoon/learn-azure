@@ -1,11 +1,19 @@
 # Module 3: Add identity with Azure Active Directory.
+**Objective**: Create a new and manage a new Azure Active Directory instance. Secure our backend by requiring authentication against Azure Active Directory, present a login flow to the user when the launch the app, and create "shadow" accounts.
+**Estimated Effort**: 1 hour
 
-### Prerequisites
-* Download the [starter code](http://www.google.com) for this module.
+###### Prerequisites
+* Visual Studio 2015 Community Edition (or higher)
+* Xamarin
+* Azure subscription
+* Postman
+* Azure SDK for .NET
+* Completion of [Module 2](/modules/module-2/), or [deployment of the Module 3 starter service] code(/modules/module-3/starter-code/).
+* Download the [starter code](/modules/module-3/starter-code/) for this module.
 
 ### Instructions
-#### Azure Active Directory
-**Objective**: Add identity with Azure Active Directory. Require authentication to access backend endpoints, and present a login flow to the user when they launch the app.
+##### Azure Active Directory
+**Note**: If you already have an Azure Active Directory set up, you can skip to Step #4.
 
 1. Open up the Azure Portal. Open up the resource group you created in Module 1. Click `Add`, search for `Active Directory`, and click `Create`. You will be redirected to the classic Azure portal.
  
@@ -25,7 +33,7 @@
 
  ![](/modules/module-3/images/new_azure_ad_app.png)
 
-6. Enter a name, and be sure to click `Web application and/or Web API`. 
+6. Enter a name, and be sure to click `Web application and/or Web API`. If you are authenticating users separate from the `Azure Mobile Apps SDK` using MSAL/ADAL, you could opt to go for creating a new client app. Azure Mobile Apps has a "server-flow" that handles much of the authentication flow for us, so we will opt for that.
 
  ![](/modules/module-3/images/create_new_azure_ad_application.png)
 
@@ -45,9 +53,11 @@
 
  ![](/modules/module-3/images/copy_client_id.png)
 
+We are now ready to secure our backend with Azure Active Directory!
+
 Woot! Now that our Azure AD application is configured, it's time update our backend to utilize Azure AD authentication.
 
-#### Backend
+##### Backend
 
 1. Navigate the `Settings` for your Azure Mobile App in the Azure Portal, and click on  `Authentication / Authorization`. Change `App Service Authentication` to `ON`. Change `Action to take when request is not authenticated` to `Allow request (no action)`. Finally, turn the `Token Store` setting to `ON` and click the `Azure Active Directory` row.
 
@@ -63,7 +73,7 @@ Woot! Now that our Azure AD application is configured, it's time update our back
 
  ![](/modules/module-3/images/success_login.png)
 
-5. To authorize individual endpoints, all we have to do is add an `AuthorizeAttribute` to the `TableController`s we wish to restrict access to. Repeat for `EmployeesController` and `TimelineItemsController`.
+5. To authorize individual endpoints, all we have to do is add an `AuthorizeAttribute` to the `TableController`s we wish to restrict access to. If we wanted to secure specific endpoints (such as POSTing new data), while allowing others to remain unauthenticated, you can apply the attribute at the method level. Repeat for `EmployeesController` and `TimelineItemsController`.
 
  ```csharp
     [Authorize]
@@ -73,13 +83,13 @@ Woot! Now that our Azure AD application is configured, it's time update our back
     }
  ```
  
-6. Republish our backend. Open up Postman and try to access an endpoint. You should receive an HTTP 401 Unauthorized response.
+6. Republish the backend using the Visual Studio publishing pane. Open up Postman, and try to access any endpoint. You should receive an HTTP 401 Unauthorized response.
 
  ![](/modules/module-3/images/401_unauthorized.png)
 
-7. Now that our API is secured, we need an easy way of creating accounts for users who have authenticated with Azure Active Directory. This step isn't always required, but if you wish to create separate accounts that are linked to the social accounts (as many apps often do that use social authentication), it must be done. Right-click `Controllers` and add a new `Web API 2 Controller` and name it `UserInfoController`.
+7. Now that our API is secured, we need an easy way of creating accounts for users who have authenticated with Azure Active Directory. This step isn't always required, but is if you wish create separate accounts that are linked to the social accounts (as many apps often do that use social authentication). Right-click `Controllers` and add a new `Web API 2 Controller`, and name it `UserInfoController`.
 
-8. We can use ASP.NET Web API's `ClaimsPrincipal` to extract some data from our authenticated user's claims and create a new `Employee` from that data. Once we have saved off the new account to our database, we can return the object to our mobile app to use.
+8. We can use ASP.NET Web API's `ClaimsPrincipal` to extract some data from our authenticated user's claims and create a new `Employee` from that data. Once we have saved off the new account to our database, we can return the object to our mobile app to use. Note that instead of using a `TableController`, we are using an `ApiController`. That's no problem! All we have to do is add the `MobileAppControllerAttribute` to register the `ApiController` with our mobile backend.
 
  ```csharp
      [MobileAppController]
@@ -144,9 +154,9 @@ Woot! Now that our Azure AD application is configured, it's time update our back
 
 9. Republish the backend! We're now ready to add authentication back to our mobile app.
 
-#### Mobile Apps
+##### Mobile Apps
 
-1. Authentication is handled on a per-platform basis with the `MobileServiceClient`, which will handle the login flow for us entirely, including presenting a user interface for our user to login with. We can use Xamarin.Forms `DependencyService` to call into these APIs on a per-platform basis. `Yammerly/Service` contains an `IAuthenticationService`, which will serve as our interface. In the  `Helpers` folder for each platform, add the corresponding `Authentication` class, which will log the user in and store some information about the `Employee` from our `UserProfileController`.
+1. Authentication is handled on a per-platform basis with the `MobileServiceClient`, which handles the login flow for us entirely, including presenting a user interface for our user to login with. We can use Xamarin.Forms `DependencyService` to call into these APIs on a per-platform basis. `Yammerly/Service` contains an `IAuthenticationService`, which will serve as our interface. In the `Helpers` folder for each platform, add the corresponding `Authentication` class, which will log the user in and store some information about the `Employee` from our `UserProfileController`.
 
  Android:
 
@@ -476,7 +486,7 @@ namespace Yammerly.Helpers
 }
  ```
 
-2. Let's update our `AzureService` to ensure that all `HttpRequests` run through this handler. In the event the request needs authorization, Azure will automatically refresh the token (or prompt the user to log back in) and resend the authorized request. Update the `Initialize` method call to include this:
+3. Let's update our `AzureService` to ensure that all `HttpRequests` run through this handler. In the event the request needs authorization, Azure will automatically refresh the token (or prompt the user to log back in) and resend the authorized request. Additionally, let's set the `CurrentUser` and `MobileServiceAuthenticationToken` properties to our stored values from login. If you opted to implement your own client-flow login, this is how you would configure the `MobileServiceClient` to know about the user. Update the `Initialize` method call to include this:
 
  ```csharp
              var handler = new AuthenticationRefreshHandler();
@@ -494,7 +504,7 @@ namespace Yammerly.Helpers
             MobileService.CurrentUser.MobileServiceAuthenticationToken = Settings.AuthToken;
  ```
 
-3. We need to actually call our login logic. Jump over to `LoginViewModel` and update the `ExecuteLoginCommandAsync` method to use our `DependencyService` to log the user in.
+3. Now it's time to call our login logic! Jump over to `LoginViewModel` and update the `ExecuteLoginCommandAsync` method to use our `DependencyService` to log the user in.
 
   ```csharp
   var client = DependencyService.Get<IDataService>() as AzureService;
@@ -522,3 +532,5 @@ namespace Yammerly.Helpers
 5. Run the app, and you will be prompted to login. Pending successful login, you will be redirected to the main portion of the application. Your profile name will also be updated.
 
  ![](/modules/module-3/images/completed_auth.png)
+ 
+We just created a new Azure Active Directory, secured our backend, added an accounts system, and added a login flow to our app. In the next module, we see just how easy it is to [add push notifications with Azure Notification Hubs](/modules/module-4/).
