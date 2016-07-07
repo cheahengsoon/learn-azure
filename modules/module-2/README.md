@@ -1,14 +1,21 @@
-# Module 2: Create am ASP.NET Web API mobile app backend.
+# Module 2: Create an ASP.NET Web API mobile app backend.
+**Objective**: Use ASP.NET Web API to build a backend for our mobile apps. Learn to debug and deploy Azure Mobile Apps backends.
 
-### Prerequisites
-* Download the [starter code](http://www.google.com) for this module.
-* Install Azure SDK for .NET
+to quickly create a no-code backend for our mobile app. Pull down data from our backend in the Yammerly mobile apps, and even configure online/offline synchronization, as well as sync conflict handling.
+**Estimated Effort**: 30 minutes
+
+###### Prerequisites
+* Visual Studio 2015 Community Edition (or higher)
+* Xamarin
+* Azure subscription
+* Postman
+* Azure SDK for .NET
+* Download the [starter code](/modules/module-2/starter-code/) for this module.
 
 ### Instructions
-#### Backend
-**Objective**: Create an ASP.NET Web API backend. Learn how to debug and deploy .NET backends.
+##### Backend
 
-1. Right-click the `Yammerly` solution, and select `Add->New Project`. Navigate to `Visual C#`-> `Cloud` -> `Azure Mobile App`. Name it `Yammerly.Service` and click `OK`.
+1. Just like any app, we can get started building Azure Mobile Apps backends with Visual Studio. Right-click the `Yammerly` solution, and select `Add->New Project`. Navigate to `Visual C#`-> `Cloud` -> `Azure Mobile App`. Name it `Yammerly.Service` and click `OK`. If you do not see this template, ensure that you have installed the Azure SDK for .NET.
 
   ![](/modules/module-2/images/new_mobile_app_backend.png)
 
@@ -16,11 +23,11 @@
 
   ![](/modules/module-2/images/project_options.png)
  
-3. Let's bring over our data objects from the mobile solution to our backend. Right-click the `Data Objects` folder and click `Add->Existing Item`. Select the `Employee`, `TimelineItem`, and `StorageToken` objects, and click `Add`.
+3. Let's bring over our data objects from the mobile solution to our backend. Right-click the `Data Objects` folder and click `Add->Existing Item`. Select the `Employee`, `TimelineItem`, and `StorageToken` objects, and click `Add`. Typically, you may use a `Shared Project` or other code sharing strategy to share models between your frontend and backend, as done in the [Xamarin Evolve conference app](https://github.com/xamarinhq/app-evolve). 
 
-4. In each data model we just added, update the namespace to `Yammerly.Service.DataObjects`. The `Microsoft.Azure.Mobile.Server` SDK comes with an `EntityData` namespace we can use. Resolve the `EntityData` class in the `Employee` and `TimelineItem` models. Additionally, remove the `Name` field from the `Employee` data model.
+4. In each data model we just added, update the namespace to `Yammerly.Service.DataObjects`. The `Microsoft.Azure.Mobile.Server` SDK comes with an `EntityData` namespace we can use, so we need to bring that namespace in as well. Additionally, remove the `Name` field from the `Employee` data model.
 
-5. Because we have nested object navigation (the `Author` property of `TimelineItem`, we need to define this property as `virtual`, which will create a JOIN for us on the table and manage that relationship for us:
+5. Because we have nested object navigation (the `Author` property of `TimelineItem`), we need to define this property as `virtual`, which will create a JOIN for us on the table and manage that relationship for us. In SQL speak, this essentially creates a backing field behind the scenes named `AuthorId` and will fetch that object for us when we request it, without having to make a separate request. `EntityFramework` handles all of this for us, so we never have to think about it.
 
  ```csharp
      public class TimelineItem : EntityData
@@ -31,15 +38,15 @@
     }
  ```
 
-5. Time to add some controllers! Right-click the `Controllers` folder and select `Add->Controller`. Select the `Azure Mobile Apps Table Controller`, as seen below, then click `Add`.
+5. Time to add some `TableController`s! These will serve as the RESTful endpoints that our mobile app hits in order to receive data or other information from the backend. Right-click the `Controllers` folder and select `Add->Controller`. Select the `Azure Mobile Apps Table Controller`, as seen below, then click `Add`.
 
   ![](/modules/module-2/images/scaffold_controller.png)
 
-6. Set the `Model Class` to `Employee` and the `Data context class` to `MobileServiceContext`. Click `Add`. Repeat this process for `TimelineItem`.
+6. Set the `Model Class` to `Employee` and the `Data context class` to `MobileServiceContext`. Click `Add`. This will "scaffold" out a new `TableController` for us and configure some additional settings. Repeat this process for `TimelineItem`.
 
   ![](/modules/module-2/images/add_controller.png)
 
-7. Next, we want to enable "soft delete" for our `Employee` and `TimelineItem` tables. To do this, open each controller and set the `enableSoftDelete` parameter of `EntityDomainManager` to `true`.
+7. Next, we want to enable "soft delete" for our `Employee` and `TimelineItem` tables. Soft delete is an awesome feature that allows a user to "delete" data without actually deleting it. This is especially useful in contexts where the user may want to "undo" a deletion. When we query data from our backend, the `MobileServiceClient` will not return any of our soft deletions, unless explictly prompted to do so.  To enable soft delete, open each controller and set the `enableSoftDelete` parameter of `EntityDomainManager` to `true`.
 
  ```csharp
 DomainManager = new EntityDomainManager<TimelineItem>(context, Request, enableSoftDelete: true);
@@ -119,15 +126,15 @@ DomainManager = new EntityDomainManager<TimelineItem>(context, Request, enableSo
 
   ![](/modules/module-2/images/publish_pane.png)
 
-13. Open up Postman. Form a request for `http://{YOUR-APP-SERVICE-NAME}.azurewebsites.net/tables/Employee?ZUMO-API-VERSION=2.0.0` and click `Send`. The first request will take a considerable amount of time, as a new database is being created and populated with our seed data. After the request returns, you should see a JSON response with employee data.
+13. Open Postman. Postman is an awesome app that we can use to debug our API. Form a request for `http://{YOUR-APP-SERVICE-NAME}.azurewebsites.net/tables/Employee?ZUMO-API-VERSION=2.0.0` and click `Send`. The first request will take a considerable amount of time, as a new database is being created and populated with our seed data. After the request returns, you should see a JSON response with employee data.
 
   ![](/modules/module-2/images/postman.png)
 
-14. If we try another request for `http://{YOUR-APP-SERVICE-NAME}.azurewebsites.net/tables/TimelineItem?ZUMO-API-VERSION=2.0.0`, we should see another 200 OK response, along with JSON data. But it looks like there is an issue - our `Author` object is not returning. This is because OData does not automatically expand our queries for us. What's this actually mean? Any navigation properties will not be automatically expanded. To fix this, we can adjust our request to include `$expand=Author` (`http://azure-training-development.azurewebsites.net/tables/TimelineItem?ZUMO-API-VERSION=2.0.0&$expand=Author`). Try the request again in Postman with the altered query, and you should see it working:
+14. If we try another request for `http://{YOUR-APP-SERVICE-NAME}.azurewebsites.net/tables/TimelineItem?ZUMO-API-VERSION=2.0.0`, we should see another 200 OK response, along with JSON data. But it looks like there is an issue - our `Author` property is not returning. This is because data pertaining to navigation properties is not automatically "expanded" for us. Imagine we have a mobile app with dozens of navigation properties, of which have navigation properties, and we request fifty records. We would be pulling down tons of data, which would make our app seem slow. In this case, we can use lazy loading to fetch these requests on demand, or selectively expand objects. In this case, let's just automatically expand all navigation properties. We can adjust our request to include `$expand=Author` (`http://azure-training-development.azurewebsites.net/tables/TimelineItem?ZUMO-API-VERSION=2.0.0&$expand=Author`). Try the request again in Postman with the altered query, and you should see it working:
 
   ![](/modules/module-2/images/postman_expansion.png)
 
-15. The issue with this is that the `MobileServiceClient` doesn't know we should do this expansion. To fix this, we can add a custom attribute to our service that, when applied, will automatically perform expansion without the client even knowing. Add a new class named `ExpandPropertyAttribute` to a new folder named `Helpers`.
+15. `MobileServiceClient` doesn't know we should do this expansion, so we need to handle this on the backend. We can add a custom attribute to our service that, when applied, will automatically perform expansion without the client even knowing. Add a new class named `ExpandPropertyAttribute` to a new folder named `Helpers` in the `Yammerly.Service` solution.
 
  ```csharp
 using System;
@@ -203,9 +210,8 @@ namespace Yammerly.Service.Helpers
 19. Open up Postman and query our production site for `TimelineItem`s. We should see a HTTP 200 OK response and JSON data, with our `Author` property autoexpanded.
  
 ### Mobile App
-**Objective**: Stuff here.
- 
-1. Now that our .NET backend is configured and deployed, it's time to connect to it. Because we already are setup to handle data from our Mobile App, no changes are needed to pull down employees. Run the app, and you will see employees load fine. The client is completely agnostic of the backend, so whether you have a no-code backend with Easy Tables or an ASP.NET backend, the client doesn't care!
+
+1. Now that our .NET backend is configured and deployed, it's time to connect to it. Because we already are setup to handle data from our Mobile App, no changes are needed to pull down employees. Run the app, and you will see employees load fine. The client is completely agnostic of the backend, so whether you have a no-code backend with Easy Tables or an ASP.NET backend - the `MobileServiceClient` is agnostic!
  
 2. Now that we have a functioning backend for `TimelineItem`s, let's take our "MVP" up to a full-blown app. Open up `App.xaml.cs` and change `MainPage` to be a new `RootPage`.
  
@@ -215,4 +221,4 @@ namespace Yammerly.Service.Helpers
   store.DefineTable<TimelineItem>();
   ```
 
-Run the mobile app, and you can see we have now have a more-complete Yammer clone with data storage backed by a .NET backend. In the next module, we will explore how to authenticate users with Azure Active Directory.
+Run the mobile app, and you will see that we now have a flyout that contains pages for our employee timeline, directory, as well as a profile page. In the next module, we will [explore how to authenticate users with Azure Active Directory](/modules/module-3/).
