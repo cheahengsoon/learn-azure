@@ -1,125 +1,20 @@
-# azure-training
-
-Learn how to build connected mobile apps with Xamarin and Azure. This training walks you through the process of creating a backend for a social network for employees, like Yammer.
+# Learn Azure
+Learn how to build connected mobile apps with Xamarin and Azure. This training walks you through the process of building a scalable backend a mobile app named Yammerly - a social network for employees. The training assumes you have absolutely no knowledge of Microsoft Azure (specifically Azure Mobile Apps), though it does assume you know how to build mobile apps with Xamarin.
 
 ### Overview
+The training is broken down into five modules:
 
-* Morning
-   * High-level overview of Azure App Service
-   * Competitive landscape
-   * Build an MVP with Azure Easy Tables
-* Afternoon
-   * Scale this out to a full ASP.NET backend with data storage, identity, and push.
-   * Tie in other services if we have time.
+1. [Build a no-code backend with Azure Easy Tables](/modules/module-1/).
+2. [Create a fully-customizable ASP.NET Web API backend](/modules/module-2/).
+3. [Add identity with Azure Active Directory](/modules/module-3/).
+4. [Add push notifications with Azure Notification Hubs](/modules/module-4/).
+5. [Add blob storage with Azure Storage](/modules/module-5/).
 
-### Outline
+### License
+Copyright (c) 2016 Pierce Boggan
 
-1. Build an MVP with Azure Easy Tables.
-2. Build a complete backend with Azure Mobile Apps and an ASP.NET Web API backend.
-3. Add identity with Azure Active Directory (AAD) authentication.
-4. Add push notifications with Azure Notification Hubs.
-5. Add blob storage with Azure Storage.
-6. Manage and secure our API with Azure API Management.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Optional:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-1. Azure Functions
-2. Azure Machine Learning
-3. Microsoft Cognitive Services
-
-Topics covered on a one-off basis are:
-
-* Dev Ops with Visual Studio Team Services (VSTS) and HockeyApp
-* Azure API Apps
-* Hybrid connections
-
-#### 1. Build an MVP with Azure Easy Tables
-Objective: Build a backend for our app, and connect it with our frontend to have online/offline sync and conflict resolution.
-
-1. Download starter code for app (uses local data).
-2. Create a new Azure Mobile Apps instance and configure Easy Tables.
-3. Consume our Easy Tables backend from our mobile application using online/offline sync.
-4. Add a custom conflict resolution handler.
-5. Investigate using Azure.Mobile, a helper library that makes connecting to an Azure backend and having online/offline sync four lines of code.
-6. Look at the limitations of using Azure Easy Tables over full-fledged Azure Mobile Apps. Why would you even opt for using Easy Tables in the first place?
-
-#### 2. Build a complete backend with Azure Mobile Apps (Web API Backend)
-Objective: Build a more customizable backend with Azure Mobile Apps that we have full control over.
-
-1. Create a new Azure Mobile Apps instance and configure our data source.
-2. Download the starter code for our ASP.NET Web API backend.
-3. Add basic data storage to our backend.
-4. Add navigation properties to our model, and expand this data on our backend automatically.
-
-#### 3. Add identity with Azure Active Directory.
-Objective: Add authentication to our backend with Azure Active Directory
-
-1. Create an Azure Active Directory instance.
-2. Register our application to authenticate with Azure AD.
-3. Configure our backend to authenticate API calls with Azure AD.
-4. Add authentication to our mobile applications.
-
-#### 4. Add push notifications with Azure Notification Hubs.
-Objective: Add push notification support to our mobile app for Android and UWP.
-
-1. Create a new Azure Notification Hub.
-2. Add a web page for sending broadcast notifications.
-3. Add an API for sending broadcast notifications.
-4. Add push notification handling to our Android and UWP apps.
-5. Add support for segmented, templated push notifications in our backend.
-
-#### 5. Add blob storage with Azure Storage.
-Objective: Create an interactive timeline with Azure Blob Storage.
-
-1. Create a new Azure Storage account.
-2. Create a new container.
-3. Add blob storage directly from our mobile apps using Azure Storage.
-4. Add blob storage to our backend, as a custom API.
-5. Check the image for adult content, using Microsoft Cognitive Services.
-
-#### 6. Manage and secure our API with Azure API Management.
-
-TODO
-
-#### Additional Topics
-##### Dev Ops with Xamarin, VSTS, and HockeyApp
-
-1. Create a Visual Studio Team Services page for our app.
-2. Add continuous integration for our mobile app.
-3. Add deployment with HockeyApp.
-
-##### Hybrid connections
-
-1. Connect our Yammer clone to a database on-prem with hybrid connections.
-
-
-##### Azure API Apps
-
-1. Build a simple API with API apps.
-
-#### Optional Topics
-
-##### Azure Functions
-TODO
-
-##### Azure Search
-TODO
-
-##### Azure Machine Learning
-Show off cognitive services recommendations demo.
-
-##### Microsoft Cognitive Services
-Add facial recognition to employee photos uploaded.
-
-### Pierce TODOS
-
-* Create introductory deck.
-* Name our mobile app
-* Create localized app.
-* Create connected app.
-* Write tutorial steps / demo script.
-* Create closing deck.
-* Add code as "releases" to GitHub.
-* Practice
-* Turn into sample application.
-* Record as a full workshop for PierceBoggan.com.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
