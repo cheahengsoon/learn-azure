@@ -1,11 +1,21 @@
-# Module 4: Add push with Azure Notification Hubs.
+# Module 4: Add push notifications with Azure Notification Hubs.
+**Objective**: Add push notifications to our Android Yammerly application using Azure Notification Hubs, and learn how to send both broadcast and templated push notifications.
 
-### Prerequisites
-* Download the [starter code](http://www.google.com) for this module.
+**Estimated Effort**: 40 minutes
+
+###### Prerequisites
+* Visual Studio 2015 Community Edition (or higher)
+* Xamarin
+* Azure subscription
+* Google account
+* Postman
+* Azure SDK for .NET
+* Completion of [Module 3](/modules/module-3/).
+* Download the [starter code](/modules/module-4/starter-code/) for this module.
 
 ### Instructions
-#### Google Cloud Messaging
-**Objective**: Add push notifications to our Yammer clone.
+##### Google Cloud Messenging Service
+Push notifications are a tricky subject. Every platform implements push differently, and offers different services for doing so. Luckily, Azure Notification Hubs makes it super easy to send push notifications to iOS, Android, Windows, and even Blackberry devices. We will start by completing the Android configuration, then configure our backend and mobile app to send and receive push notifications.
 
 1. Navigate to the [Google Cloud Console](https://console.cloud.google.com/), and sign in with your Google credentials. Click `Create New Project`.
  
@@ -27,7 +37,7 @@
 
 #### Backend
 
-1. Navigate to your resource group in the Azure Portal. Search for `Notification Hub`, select the row, and click `Create`.
+1. Navigate to your resource group in the Azure Portal. Search for `Notification Hub`, select the row, and click `Create`. Notification Hubs manage the complex relationships between all the different push services and platforms, and give us an easy-to-use API and portal for adding push to our applications.
 
 2. Enter a name, namespace, and region for your Notification Hub to be hosted in, then select `Create`.
 
@@ -52,7 +62,7 @@ Backend configuration is now complete for the Notification Hub. It's time to con
     }
  ```
 
-2. Now that we have our required values for push notifications, let's add some code to handle them when they arrive. Add a new class to the `Helpers` directory named `PushService` that will register the device to receive push notifications, and handle incoming push notifications.
+2. Now that we have our required values for push notifications, let's add some code to handle them when they arrive. Add a new class to the `Helpers` directory named `PushService` that will register the device to receive push notifications, and handle incoming push notifications. The majority of this is boilerplate code that can be added every time and doesn't need to be rewritten. You can use `OnRegistered` to register the device for additional tags (for targeted push), and `OnMessage` to define what happens when you receive a push notification (such as deep link into a Xamarin.Forms page).
 
  ```csharp
  using System;
@@ -147,7 +157,7 @@ namespace Yammerly.Droid.Helpers
 }
 ```
 
-3. Add a new method to `MainActivity` named `ConfigurePushNotifications` and call it from `OnCreate`. This will handle initialization of the Google Cloud Messaging Service as well as register the device for Google Cloud Messenging.
+3. Add a new method to `MainActivity` named `ConfigurePushNotifications` and call it from `OnCreate`. This will handle initialization of the push service as well as register the device to receive push notifications from Google Cloud Messaging/Notification Hubs.
 
  ```csharp
         public void ConfigurePushNotifications()
@@ -162,3 +172,5 @@ namespace Yammerly.Droid.Helpers
  5. Visit the Azure Notification Hub portal and click `Test Send`. Select the `Android` platform, then press `Send`. You should notice the notification appear on the device.
 
   ![](/modules/module-4/images/notification_hub_configure.png)
+
+In this module, we added push notifications to our Yammerly Android app in just a few minutes with Azure Notification Hubs. In the next module, we wrap up our Yammer clone by [adding blob storage with Azure Storage](/modules/module-5).
