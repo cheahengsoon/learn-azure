@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 using Recommendations;
@@ -8,11 +9,6 @@ namespace MicrosoftStore
 {
 	public class CheckoutViewModel : BaseViewModel
 	{
-		const string AccountKey = "799bcb7dd81a492286193ce3209ec0f6";
-		const string BaseUri = "https://westus.api.cognitive.microsoft.com/recommendations/v4.0";
-		const long BuildId = 1558644;
-		const string ModelId = "a2d93304-457c-4c6c-9a23-4320a58fbe27";
-
 		public ObservableCollection<Inventory> Cart { get; set; }	
 		public ObservableCollection<Inventory> Recommendations { get; set; }
 
@@ -23,22 +19,26 @@ namespace MicrosoftStore
 			var app = (App)Application.Current;
 			Cart = app.Cart;
 
+			Recommendations = new ObservableCollection<Inventory>();
+
 			CheckoutRecommendations();
 		}
 
-		void CheckoutRecommendations()
+		async Task CheckoutRecommendations()
 		{
-			var client = new RecommendationsApi(AccountKey, BaseUri);
-			var recommendations = client.GetRecommendations(ModelId, BuildId, Cart[0].ItemId, 3);
-
-			Recommendations = new ObservableCollection<Inventory>();
-			foreach (var rec in recommendations.RecommendedItemSetInfo)
+			Task.Run(() =>
 			{
-				foreach (var item in rec.Items)
+				var client = new RecommendationsApi(Constants.AccountKey, Constants.BaseUri);
+				var recommendations = client.GetRecommendations(Constants.ModelId, Constants.BuildId, Cart[0].ItemId, 3);
+
+				foreach (var rec in recommendations.RecommendedItemSetInfo)
 				{
-					Recommendations.Add(new Inventory { ItemId = item.Id, Name = item.Name, Description = rec.Rating.ToString() });
+					foreach (var item in rec.Items)
+					{
+						Recommendations.Add(new Inventory { ItemId = item.Id, Name = item.Name, Description = rec.Rating.ToString() });
+					}
 				}
-			}
+			});
 		}
 	}
 }
