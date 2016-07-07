@@ -2,7 +2,7 @@
 **Objective**: Use ASP.NET Web API to build a backend for our mobile apps. Learn to debug and deploy Azure Mobile Apps backends.
 
 to quickly create a no-code backend for our mobile app. Pull down data from our backend in the Yammerly mobile apps, and even configure online/offline synchronization, as well as sync conflict handling.
-**Estimated Effort**: 30 minutes
+**Estimated Effort**: 1 hour
 
 ###### Prerequisites
 * Visual Studio 2015 Community Edition (or higher)
